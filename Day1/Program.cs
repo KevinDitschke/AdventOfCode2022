@@ -4,16 +4,26 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine(GetHighestCaloryCount("inputTest.txt"));
-        Console.WriteLine(GetHighestCaloryCount("input.txt"));
+        foreach (var sum in GetHighestCaloryCount("inputTest.txt"))
+        {
+            Console.WriteLine(sum);
+        }
+        var sums = GetHighestCaloryCount("input.txt");
+
+        foreach (var sum in sums)
+        {
+            Console.WriteLine(sum);
+        }
+        
+        Console.WriteLine(sums.Sum());
     }
 
-    private static int GetHighestCaloryCount(string fileName)
+    private static List<int> GetHighestCaloryCount(string fileName)
     {
         var file = File.ReadAllLines(fileName);
-        
+
         int temp = 0;
-        int sum = 0;
+        var listOfSums = new List<int>();
         foreach (var line in file)
         {
             int output = 0;
@@ -21,13 +31,12 @@ internal class Program
                 temp += output;
             else
             {
-                if (temp > sum)
-                {
-                    sum = temp;
-                }
+                listOfSums.Add(temp);
                 temp = 0;
             }
         }
-        return sum;
+
+        listOfSums.Add(temp);
+        return listOfSums.OrderByDescending(x => x).Take(3).ToList();
     }
 }
