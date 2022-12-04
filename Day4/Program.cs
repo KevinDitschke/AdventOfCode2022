@@ -27,9 +27,11 @@ internal class Program
                 End = int.Parse(ranges[1].Split('-').Last())
             };
 
-            if ((firstSectionRange.Start <= secondSectionRange.Start &&
-                 firstSectionRange.End >= secondSectionRange.End) ||
-                firstSectionRange.Start >= secondSectionRange.Start && firstSectionRange.End <= secondSectionRange.End)
+            if (firstSectionRange.Start <= secondSectionRange.Start &&
+                 firstSectionRange.End >= secondSectionRange.End ||
+                firstSectionRange.Start >= secondSectionRange.Start && firstSectionRange.End <= secondSectionRange.End ||
+                firstSectionRange.Start <= secondSectionRange.Start && firstSectionRange.End >= secondSectionRange.Start ||
+                 secondSectionRange.Start <= firstSectionRange.Start && secondSectionRange.End >= firstSectionRange.Start)
                 sum++;
         }
 
