@@ -13,7 +13,6 @@ internal class Program
             priorities.Add((char)(i + 96), i);
         }
 
-        // Console.WriteLine(GroupsOfThree("inputTest.txt"));
         Console.WriteLine(GroupsOfThree("input.txt"));
     }
 
