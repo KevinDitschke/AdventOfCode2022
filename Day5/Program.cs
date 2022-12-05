@@ -17,11 +17,16 @@ internal class Program
         
         foreach (var movement in movements)
         {
+            var listToPop = new List<char>();
             for (int i = movement[0]; i > 0; i--)
             {
                 Console.WriteLine($"move {movement[0]} from {movement[1]} to {movement[2]}");
-                var pop = stacks[movement[1]-1].Pop();
-                
+                listToPop.Add(stacks[movement[1]-1].Pop());
+            }
+
+            listToPop.Reverse();
+            foreach (var pop in listToPop)
+            {
                 stacks[movement[2]-1].Push(pop);
             }
         }
