@@ -14,9 +14,9 @@ internal class Program
         var position = 0;
         for (var i = 0; i < text.Length-4; i++)
         {
-            var subString = text.Substring(i, 4);
-            if (subString.Select(x => x).Distinct().Count() == 4){
-                position = i + 4;
+            var subString = text.Substring(i, 14);
+            if (subString.Select(x => x).Distinct().Count() == 14){
+                position = i + 14;
                 break;
             }
         }
