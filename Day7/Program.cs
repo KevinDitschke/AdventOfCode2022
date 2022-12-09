@@ -31,15 +31,18 @@ internal class Program
                     continue;
                 case string s when s.StartsWith("dir"):
                     var directoryName = command.Remove(0, 4);
-                    var dir = directories.Any(x => x.Name == directoryName)
-                        ? directories.Single(x => x.Name == directoryName)
-                        : new Directory()
-                        {
-                            Name = directoryName, Parent = directory.Name, Files = new List<File>(),
-                            SubDirectories = new List<Directory>()
-                        };
-                    if (directories.All(x => x.Name != directoryName))
-                        directories.Add(dir);
+                    if (directories.Any(x =>
+                            x.Name == directoryName && directory.SubDirectories.Any(y => y.Name == directoryName)))
+                        continue;
+
+                    var dir = new Directory()
+                    {
+                        Name = directoryName, Parent = directory.Name, Files = new List<File>(),
+                        SubDirectories = new List<Directory>()
+                    };
+                    
+                    if(directories.All(x => x.Name != directoryName))
+                        directory.SubDirectories.Add(dir);
                     continue;
                 case string s when char.IsNumber(s.First()):
                     var split = command.Split(' ');
