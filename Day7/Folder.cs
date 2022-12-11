@@ -2,63 +2,40 @@
 
 public class Folder
 {
-    public string Name { get; set; }
-    public long Size { get; set; }
-    public Dictionary<string, Folder> Subfolders { get; set; }
-    public Folder Parent { get; set; }
+    public string? Name { get; set; }
+    public int Size { get; set; } = 0;
     public Folder CurrentFolder { get; set; }
+    public List<Folder> SubFolders { get; set; }
+    public Folder Parent { get; set; }
 
-    public Folder(string name, long size, Folder parent = null)
+    public Folder(string name, Folder parent)
     {
         Name = name;
-        Size = size;
         Parent = parent;
-        Subfolders = new Dictionary<string, Folder>();
-        CurrentFolder = this;
+        SubFolders = new List<Folder>();
     }
 
-    public Folder GetParent()
+    public void SetCurrentFolder(Folder folder)
     {
-        return Parent;
+        CurrentFolder = folder;
+    }
+    
+    public Folder MoveOneUp()
+    {
+        if (Parent != null)
+            CurrentFolder = Parent;
+
+        return CurrentFolder;
     }
 
-    public Folder GetSubfolder(string name)
+    public void MoveToTopLevel()
     {
-        if (Subfolders.ContainsKey(name))
-        {
-            return Subfolders[name];
-        }
-        return null;
+        while (Parent != null)
+            MoveOneUp();
     }
 
-    public void MoveUp()
+    public void AddFolder(string name, Folder folder)
     {
-        if (CurrentFolder.Parent != null)
-        {
-            CurrentFolder = CurrentFolder.Parent;
-        }
-    }
-
-    public void MoveDown(string name)
-    {
-        if (CurrentFolder.Subfolders.ContainsKey(name))
-        {
-            CurrentFolder = CurrentFolder.Subfolders[name];
-        }
-    }
-
-    public long GetTotalSize()
-    {
-        return GetTotalSize(this, 0);
-    }
-
-    private long GetTotalSize(Folder folder, long sum)
-    {
-        sum += folder.Size;
-        foreach (var subfolder in folder.Subfolders.Values)
-        {
-            sum = GetTotalSize(subfolder, sum);
-        }
-        return sum;
+        SubFolders.Add(new Folder(name, folder));
     }
 }

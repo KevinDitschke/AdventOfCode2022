@@ -1,79 +1,65 @@
 ﻿namespace Day7;
 
-internal class Program
+public class Program
 {
     static void Main(string[] args)
     {
-        // Console.WriteLine(FindLargestDirectory("inputTest.txt"));
-        Console.WriteLine(FindLargestDirectory("input.txt"));
+        // Console.WriteLine(GetTotalSize("inputTest.txt"));
+        Console.WriteLine(GetTotalSize("input.txt"));
     }
 
-    private static int FindLargestDirectory(string fileName)
+    public static int GetTotalSize(string fileName)
     {
         var commands = ReadFile(fileName);
-        var sum = 0;
-        var directories = new List<Directory>();
-        var directory = new Directory()
-            { Name = "/", Parent = null, SubDirectories = new List<Directory>(), Files = new List<File>() };
-        directories.Add(directory);
+        var folder = new Folder("/", null);
+        folder.SetCurrentFolder(folder);
+        int i = 0;
         foreach (var command in commands)
         {
+            i++;
             switch (command)
             {
                 case "$ cd /":
-                    directory = directories.Single(x => x.Name == "/");
+                    folder.CurrentFolder.MoveToTopLevel();
                     continue;
                 case string s when s.StartsWith("$ cd .."):
-                    directory = directories.Single(x => directory.Parent == x.Name);
+                    folder.CurrentFolder = folder.CurrentFolder.MoveOneUp();
                     continue;
                 case string s when s.StartsWith("$ cd"):
-                    directory = directories.Single(x => x.Name == command.Split(' ').Last());
+                    var dir = command.Split(' ').Last();
+                    folder.SetCurrentFolder(folder.CurrentFolder.SubFolders.Single(x => x.Name == dir));
                     continue;
                 case string s when s.StartsWith("dir"):
                     var directoryName = command.Remove(0, 4);
-                    if (directories.Any(x =>
-                            x.Name == directoryName && directory.SubDirectories.Any(y => y.Name == directoryName)))
-                        continue;
-
-                    var dir = new Directory()
-                    {
-                        Name = directoryName, Parent = directory.Name, Files = new List<File>(),
-                        SubDirectories = new List<Directory>()
-                    };
-                    
-                    if(directories.All(x => x.Name != directoryName))
-                        directory.SubDirectories.Add(dir);
+                    folder.CurrentFolder.AddFolder(directoryName, folder.CurrentFolder);
                     continue;
                 case string s when char.IsNumber(s.First()):
-                    var split = command.Split(' ');
-                    var name = split.Last();
-                    var size = int.Parse(split.First());
-                    directory.Files.Add(new File() { Name = name, Size = size });
+                    var size = int.Parse(command.Split(' ').First());
+                    folder.CurrentFolder.Size += size;
                     continue;
             }
         }
-        
-        directories.ForEach(x => sum += x.Files.Where(y => y.Size <= 100000).Sum(z => z.Size));
+        Console.WriteLine("RootSize: " + folder.Size);
+        return GetFolderSizes(folder, 0);
+    }
 
-        return sum;
+    private static int GetFolderSizes(Folder folder, int total)
+    {
+        if (folder.Size <= 100000)
+        {
+            if(folder.Size != 0)
+                Console.WriteLine($"{folder.Name} - {folder.Size}");
+            total += folder.Size;
+        }
+        foreach (var subfolder in folder.SubFolders)
+        {
+            total = GetFolderSizes(subfolder, total);
+        }
+        return total;
     }
 
     private static string[] ReadFile(string fileName)
     {
-        return System.IO.File.ReadAllLines(fileName);
+        return File.ReadAllLines(fileName);
     }
-}
-
-class Directory
-{
-    public string? Name { get; set; }
-    public string? Parent { get; set; }
-    public List<Directory> SubDirectories { get; set; }
-    public List<File> Files { get; set; }
-}
-
-class File
-{
-    public string Name { get; set; }
-    public int Size { get; set; }
 }
